@@ -47,5 +47,36 @@ trap cleanup EXIT INT TERM
 echo "Script started. Log file created at: $LOG_FILE"
 
 # This function performs the actual health check on a remote server
+check_server() {
+	local server="$1"
+	local user="$2"
 
+	log_info "..... Checking Server: $server ..... "
+
+	# Use an SSH here-document to send a batch of commands in one connection
+	ssh -n -o ConnectTimeout=5 "${user}@${server}" << 'EOF'
+	# 1. Uptime Check
+		echo "--- System Uptime ---"
+		uptime
+	# 2. Disk Check (Root Partition)
+	echo "--- Disk Usage (Root /)"
+	# NR==2 means print only the second line of df output
+	df -h | awk 'NR==2 {print "Used: " $5 " (" $3 "/" $2 ")"}'
+	# 3. Memory Check 
+	echo "--- Memory usage ---"
+	free -m | awk 'NR==2 {
+	  printf "Used: %sMB / Total: %sMB (%.2f%%)\n",$3, $2, ($3/$2)*100
+	}'
+	# 4. Security Check (SSH brute-force failures)
+	echo "--- Security (SSH) ---"
+	AUTH_LOG="/var/log/auth.log"
+	if [[ -f "$AUTH_LOG" ]]; then
+		count=$(grep -c "Failed password" "$AUTH_LOG")
+		echo "Fail SSH Attempts: $count"
+	else
+		echo "Failed SSH Attempts: auth log not found."
+	fi
+EOF
+	log_info "--- Finished Check: $server ---"
+}
 
