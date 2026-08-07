@@ -80,3 +80,77 @@ EOF
 	log_info "--- Finished Check: $server ---"
 }
 
+# Main function: core logic of the script
+main() {
+	local server_file=""
+	local remote_user=""
+	# ---- Argument Parsing (using getopts) ----
+	while getopts ":f:u:h" opt; do
+		case "$opt" in
+			f)
+				server_file="$OPTARG"
+				;;
+			u)
+				remote_user="$OPTARG"
+				;;
+			h)
+				print_usage
+				exit 0
+				;;
+			\?) # Invalid flag
+				log_error "Invalid option: -$OPTARG"
+				print_usage
+				exit 1
+				;;
+			:) # Missing value for a flag
+				log_error "Option -$OPTARG requires an argument."
+				print_usage
+				exit 1
+				;;
+		esac
+	  done
+ # ---- Input Validation ----
+if [[ -z "$server_file" || -z "$remote_user" ]]; then
+	log_error "Missing required arguments."
+	print_usage
+	exit 1
+fi
+if [[ ! -f "$server_file" ]]; then
+	log_error "Server file not found: $server_file"
+	exit 1
+fi
+
+# Define an empty array to hold the servers
+declare -a servers=()
+# Read the server file line by line (safe method)
+while IFS= read -r line; do
+  # Skip empty lines and comments lines
+	if [[ -z "$line" || "$line" == \#* ]]; then
+		continue
+	fi
+  # Add the server to the array
+	servers+=("$line")
+done <"$server_file"
+if [[ "${#servers[@]}" -eq 0 ]]; then
+	log_error "No servers found in $server_file. Exiting."
+	exit 1
+fi
+	log_info "Found ${#servers[@]} servers to check. Starting...."
+
+log_info "Configuration valid. Starting health checks......"
+
+
+# ---- Script Entry point ----
+# Call main with all script arguments
+  #... (after reading the servers into the array)
+	log_info "Found ${#servers[@]} servers to check. Starting..."
+  # Loop through the array properly 
+	for server_host in "${servers[@]}"; do
+		check_server "$server_host" "$remote_user"
+	done
+
+	log_info "All checks completed."
+}
+
+# --- Execution ---
+main "$@"
