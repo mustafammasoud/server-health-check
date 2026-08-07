@@ -1,0 +1,9 @@
+logs/
+reports/
+*.log
+
+.env
+
+tmp/
+
+*.tmp
