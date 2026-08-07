@@ -38,7 +38,7 @@ This project was built while learning Bash scripting and DevOps automation. It d
 ```text
 server-health-check/
 ├── server_health_check.sh
-├── servers.txt
+├── servers.example.txt
 └── README.md
 ```
 
@@ -58,19 +58,19 @@ server-health-check/
 Make the script executable:
 
 ```bash
-chmod +x server_health_check.sh
+chmod +x server-health-check.sh
 ```
 
 Run the script:
 
 ```bash
-./server_health_check.sh -f servers.txt -u <remote_user>
+./server-health-check.sh -f servers.example.txt -u <remote_user>
 ```
 
 Example:
 
 ```bash
-./server_health_check.sh -f servers.txt -u ubuntu
+./server-health-check.sh -f servers.example.txt -u ubuntu
 ```
 
 ---
