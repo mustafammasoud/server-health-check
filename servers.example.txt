@@ -1,0 +1,19 @@
+# ==========================================
+# Server Health Check - Sample Server List
+# One server per line
+# Lines starting with '#' are ignored
+# Empty lines are ignored
+# ==========================================
+
+# Production Servers
+192.168.1.10
+192.168.1.11
+
+# Staging Server
+192.168.1.20
+
+# Development Server
+192.168.1.30
+
+# Example Domain
+example.com
